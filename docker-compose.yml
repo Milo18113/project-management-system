@@ -1,12 +1,9 @@
 services:
   api:
     build: .
-    container_name: project-manager
+    container_name: project-management-system
     ports:
       - "8000:8000"
     volumes:
-      - project-manager-data:/app
+      - .:/app
     restart: unless-stopped
-
-volumes:
-  - project-manager-data:

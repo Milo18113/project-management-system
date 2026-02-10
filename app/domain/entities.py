@@ -9,8 +9,8 @@ from app.domain.priority import PriorityStrategy, PriorityContext
 
 @dataclass
 class Project:
-    id: str = field(default_factory=lambda: str(uuid4()))
     name: str
+    id: str = field(default_factory=lambda: str(uuid4()))
 
     def __post_init__(self) -> None:
         if not self.name or len(self.name.strip()) < 5:
@@ -18,11 +18,11 @@ class Project:
 
 @dataclass
 class Task:
-    id: str = field(default_factory=lambda: str(uuid4()))
     title: str
     project_id: str
     strategy: PriorityStrategy
     due_date: date | None = None
+    id: str = field(default_factory=lambda: str(uuid4()))
     _status: TaskStatus = field(default_factory=TaskStatus.TODO)
 
     def __post_init__(self) -> None:

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPExecption
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.domain.exceptions import DomainError, NotFoundError, InvalidStatusTransition, ValidationError
 from app.repositories.memory import InMemoryProjectRepo, InMemoryTaskRepo
@@ -17,14 +17,18 @@ def get_project_service() -> ProjectService:
 def get_task_service() -> TaskService:
     return TaskService(project_repo, task_repo)
 
-def to_http(e: Exception) -> HTTPExecption:
+def to_http(e: Exception) -> HTTPException:
     if isinstance(e, NotFoundError):
-        return HTTPExecption(status_code = 404, details=str(e))
+        return HTTPException(status_code = 404, details=str(e))
     if isinstance(e, InvalidStatusTransition, ValidationError, ValueError):
-        return HTTPExecption(status_code = 400, details=str(e))
+        return HTTPException(status_code = 400, details=str(e))
     if isinstance(e, DomainError):
-        return HTTPExecption(status_code=500, details='Internal Server Error')
+        return HTTPException(status_code=500, details='Internal Server Error')
 
-@router.post('/projects', response_model = ProjectOut ,status_code = 201)
+@router.post('/projects',response_model = ProjectOut ,status_code = 201)
 def create_project(body: ProjectCreate, service: ProjectService = Depends(get_project_service)):
-    pass
+    try:
+        project = service.create(body.name)
+        return ProjectOut(id = project.id, name = project.name)
+    except Exception as e:
+        raise to_http(e)
