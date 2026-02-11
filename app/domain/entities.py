@@ -23,7 +23,7 @@ class Task:
     strategy: PriorityStrategy
     due_date: date | None = None
     id: str = field(default_factory=lambda: str(uuid4()))
-    _status: TaskStatus = field(default_factory=TaskStatus.TODO)
+    _status: TaskStatus = field(default_factory=lambda: TaskStatus.TODO)
 
     def __post_init__(self) -> None:
         if not self.title or len(self.title.strip()) < 5:
@@ -47,7 +47,7 @@ class Task:
             raise ValidationError('El nuevo titulo debe tener como minimo 5 caracteres')
         self.title = new_title
 
-    def transtition_to(self, new_status: TaskStatus) -> None:
+    def transition_to(self, new_status: TaskStatus) -> None:
         allowed = {
             TaskStatus.TODO: {TaskStatus.DOING},
             TaskStatus.DOING: {TaskStatus.DONE},
